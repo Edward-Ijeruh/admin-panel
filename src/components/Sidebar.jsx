@@ -24,7 +24,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
         } md:translate-x-0`}
       >
         <div className="p-6 text-xl font-bold flex items-center justify-between">
-          BrandWave Admin
+          Event Cast
           <button
             className="md:hidden text-gray-500"
             onClick={() => setIsOpen(false)}
