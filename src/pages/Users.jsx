@@ -18,6 +18,7 @@ export default function Users() {
   
     
       useEffect(() => {
+        
       const fetchUsers = async () => {
         setLoading(true);
         const { data, error } = await supabase

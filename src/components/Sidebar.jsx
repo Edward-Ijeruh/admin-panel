@@ -1,5 +1,7 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Gauge, Calendar, Users, Gear, SignOut, X } from "phosphor-react";
+import { supabase } from './../supabaseClient';
+
 
 const navItems = [
   { name: "Dashboard", path: "/dashboard", icon: <Gauge size={20} /> },
@@ -9,6 +11,19 @@ const navItems = [
 ];
 
 export default function Sidebar({ isOpen, setIsOpen }) {
+  const navigate = useNavigate();
+
+
+const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error('Logout error:', error.message);
+    } else {
+      console.log('Logged out');
+      navigate('/login');
+     }
+  };
+
   return (
     <>
       {isOpen && (
@@ -53,7 +68,10 @@ export default function Sidebar({ isOpen, setIsOpen }) {
           ))}
         </nav>
 
-        <button className="flex items-center gap-2 px-8 py-3 mt-auto w-full text-red-600 hover:bg-red-50 transition cursor-pointer">
+        <button 
+        className="flex items-center gap-2 px-8 py-3 mt-auto w-full text-red-600 hover:bg-red-50 transition cursor-pointer"
+        onClick={handleLogout}
+        >
           <SignOut size={20} />
           Logout
         </button>

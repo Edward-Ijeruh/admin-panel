@@ -25,9 +25,11 @@ export default function Events() {
       } else {
         console.log('Fetched Events: ', data);
         setEvents(data);
+        console.log("Number of Events: ", data.length);
       }
 
       setLoading(false);
+      
     };
 
     fetchEvents();
