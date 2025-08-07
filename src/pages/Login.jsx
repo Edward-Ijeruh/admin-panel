@@ -1,13 +1,29 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from './../supabaseClient';
+import { useEffect } from 'react';
+
+
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+
+  
+
+  const signIn = async (e) => {
     e.preventDefault();
+
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+     if (error) {
+      console.log(error);
+      alert(error.message);
+    } else {
+      // Navigate to dashboard
+      navigate('/dashboard');
+    }
   };
 
   return (
@@ -15,7 +31,7 @@ export default function Login() {
       <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
         <h2 className="text-2xl font-bold mb-6 text-center">Admin Login</h2>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={signIn} className="space-y-5">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Email address

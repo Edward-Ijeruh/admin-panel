@@ -2,10 +2,10 @@ import { NavLink } from "react-router-dom";
 import { Gauge, Calendar, Users, Gear, SignOut, X } from "phosphor-react";
 
 const navItems = [
-  { name: "Dashboard", path: "/", icon: <Gauge size={20} /> },
-  { name: "Events", path: "/events", icon: <Calendar size={20} /> },
-  { name: "Users", path: "/users", icon: <Users size={20} /> },
-  { name: "Settings", path: "/settings", icon: <Gear size={20} /> },
+  { name: "Dashboard", path: "/dashboard", icon: <Gauge size={20} /> },
+  { name: "Events", path: "/dashboard/events", icon: <Calendar size={20} /> },
+  { name: "Users", path: "/dashboard/users", icon: <Users size={20} /> },
+  { name: "Settings", path: "/dashboard/settings", icon: <Gear size={20} /> },
 ];
 
 export default function Sidebar({ isOpen, setIsOpen }) {

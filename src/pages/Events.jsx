@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Trash2, X, UploadCloud, Plus } from "lucide-react";
+import { supabase } from './../supabaseClient';
+
 
 export default function Events() {
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -107,6 +109,13 @@ function CreateEventForm() {
   const [selectedImages, setSelectedImages] = useState([]);
   const [selectedPdf, setSelectedPdf] = useState(null);
   const [selectedVideo, setSelectedVideo] = useState(null);
+  const [title, setTitle] = useState("");
+  const [description, setDesc] = useState("");
+  const [images, setImages] = useState([]);
+  const [videoURL, setVideoURL] = useState("");
+  const [pdf, setPdf] = useState(null);
+  const [location, setLocation] = useState("");
+  const [date, setDate] = useState('');
 
   const handleImageUpload = (e) => {
     if (e.target.files) setSelectedImages(Array.from(e.target.files));
@@ -122,13 +131,26 @@ function CreateEventForm() {
       setSelectedVideo(e.target.files[0]);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert(
-      `Form submitted. Images: ${selectedImages.length}, Video: ${
-        selectedVideo ? selectedVideo.name : "None"
-      }, PDF: ${selectedPdf ? selectedPdf.name : "None"}`
-    );
+    const data = {
+      title,
+      description,
+      //images,
+      //videoURL,
+      //pdf,
+      location
+    };
+    console.log("Event submitted:", data);
+    alert("Event submitted (check console)");
+    const { error } = await supabase
+    .from('events')
+    .insert(data)
+    // alert(
+    //   `Form submitted. Images: ${selectedImages.length}, Video: ${
+    //     selectedVideo ? selectedVideo.name : "None"
+    //   }, PDF: ${selectedPdf ? selectedPdf.name : "None"}`
+    // );
   };
 
   return (
@@ -144,6 +166,8 @@ function CreateEventForm() {
           </label>
           <input
             type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
             className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500 transition"
             placeholder="Enter event title"
             required
@@ -156,11 +180,27 @@ function CreateEventForm() {
             Description
           </label>
           <textarea
+            value={description}
+            onChange={(e) => setDesc(e.target.value)}
             className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500 transition"
             rows={4}
             placeholder="Enter event description"
             required
           ></textarea>
+        </div>
+
+        {/* Location */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Event Location
+          </label>
+          <input
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500 transition"
+            placeholder="Enter event location"
+            required
+          ></input>
         </div>
 
         {/* Image Upload */}

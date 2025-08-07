@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { supabase } from './../supabaseClient';
+
 
 export default function EventForm() {
   const [title, setTitle] = useState("");
@@ -6,6 +8,8 @@ export default function EventForm() {
   const [images, setImages] = useState([]);
   const [videoURL, setVideoURL] = useState("");
   const [pdf, setPdf] = useState(null);
+  const [location, setLocation] = useState("");
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -15,6 +19,7 @@ export default function EventForm() {
       images,
       videoURL,
       pdf,
+      location
     };
     console.log("Event submitted:", data);
     alert("Event submitted (check console)");
