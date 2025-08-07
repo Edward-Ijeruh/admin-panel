@@ -5,19 +5,51 @@ import {
   Clock,
   ChartLineUp,
 } from "phosphor-react";
+import { useEffect, useState } from "react";
+import { supabase } from './../supabaseClient';
 
 export default function Dashboard() {
+  const [userCount, setUserCount] = useState(0);
+  const [eventCount, setEventCount] = useState(0);
+
+  useEffect(() => {
+      const fetchCounts = async () => {
+
+        const { data: evData, error: evErr } = await supabase
+        .from('events')
+        .select() // Or select only the fields you need
+        .order('created_at', { ascending: false });
+
+        console.log('Number of events:', evData?.length ?? 0);
+        console.log('Error:', evErr);
+        setEventCount(evData?.length ?? 0);
+
+
+        const { data: userData, error: usErr } = await supabase
+          .from('users')
+          .select() // Or select only the fields you need
+          .order('created_at', { ascending: false });
+        console.log('Number of users:', userData?.length);
+        console.log('User Error:', usErr);
+        setUserCount(userData?.length ?? 0);
+
+
+      };
+  
+      fetchCounts();
+    }, []);
+
   const stats = [
     {
       id: "total-events",
       label: "Total Events",
-      value: "1",
+      value: eventCount,
       icon: <CalendarCheck size={28} className="text-indigo-600" />,
     },
     {
       id: "active-users",
       label: "Active Users",
-      value: "3",
+      value: userCount,
       icon: <UsersThree size={28} className="text-indigo-600" />,
     },
     {
