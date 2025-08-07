@@ -5,6 +5,7 @@ import Events from "./pages/Events";
 import EventCreate from "./pages/EventCreate";
 import Users from "./pages/Users";
 import Settings from "./pages/Settings";
+import Login from "./pages/Login";
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
         <Route path="users" element={<Users />} />
         <Route path="settings" element={<Settings />} />
         <Route path="*" element={<Navigate to="/" />} />
+        <Route path="login" element={<Login />} />
       </Route>
     </Routes>
   );
