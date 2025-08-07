@@ -1,4 +1,7 @@
 import { Trash } from "phosphor-react";
+import { useEffect, useState } from "react";
+import { supabase } from './../supabaseClient';
+
 
 const mockUsers = [
   { id: "1", name: "Jane Doe", email: "jane@example.com", role: "Admin" },
@@ -7,6 +10,34 @@ const mockUsers = [
 ];
 
 export default function Users() {
+
+
+      const [users, setUsers] = useState([]);
+        const [loading, setLoading] = useState(true);
+  
+  
+    
+      useEffect(() => {
+      const fetchUsers = async () => {
+        setLoading(true);
+        const { data, error } = await supabase
+          .from('users')
+          .select() // Or select only the fields you need
+          .order('created_at', { ascending: false });
+  
+        if (error) {
+          console.error('Error fetching users:', error.message);
+        } else {
+          console.log('Fetched Users: ', data);
+          setUsers(data);
+        }
+  
+        setLoading(false);
+      };
+  
+      fetchUsers();
+    }, []);
+
   const handleDelete = (userId) => {
     if (confirm("Are you sure you want to delete this user?")) {
       alert(`Deleted user: ${userId}`);
@@ -32,10 +63,10 @@ export default function Users() {
             </tr>
           </thead>
           <tbody className="divide-y">
-            {mockUsers.map((user) => (
+            {users.map((user) => (
               <tr key={user.id} className="hover:bg-gray-50 transition">
                 <td className="px-4 py-4 text-sm font-medium text-gray-800">
-                  {user.name}
+                  {user.full_name}
                 </td>
                 <td className="px-4 py-4 text-sm text-gray-600 hidden md:table-cell">
                   {user.email}
