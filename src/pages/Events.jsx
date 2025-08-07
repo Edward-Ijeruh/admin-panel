@@ -1,26 +1,39 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Trash2, X, UploadCloud, Plus } from "lucide-react";
+import { supabase } from './../supabaseClient';
+
 
 export default function Events() {
   const [showCreateForm, setShowCreateForm] = useState(false);
+    const [events, setEvents] = useState([]);
+      const [loading, setLoading] = useState(true);
 
-  const events = [
-    {
-      id: 1,
-      title: "Annual Tech Summit 2024",
-      status: "Published",
-      date: "10/15/2024",
-    },
-    { id: 2, title: "Marketing Unboxed", status: "Draft", date: "11/02/2024" },
-    {
-      id: 3,
-      title: "Summer Product Launch",
-      status: "Archived",
-      date: "07/30/2024",
-    },
-  ];
+
+  
+    useEffect(() => {
+    const fetchEvents = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('events')
+        .select() // Or select only the fields you need
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching events:', error.message);
+      } else {
+        console.log('Fetched Events: ', data);
+        setEvents(data);
+      }
+
+      setLoading(false);
+    };
+
+    fetchEvents();
+  }, []);
+
+
 
   return (
     <main className="flex-1 py-4 overflow-y-auto">
@@ -58,6 +71,9 @@ export default function Events() {
           </h3>
 
           <ul className="space-y-4">
+
+
+
             {events.map((event) => (
               <li
                 key={event.id}
@@ -73,18 +89,14 @@ export default function Events() {
 
                 <span
                   className={`px-2 py-1 rounded-full text-xs sm:text-sm font-semibold ${
-                    event.status === "Published"
-                      ? "bg-indigo-100 text-indigo-700"
-                      : event.status === "Draft"
-                      ? "bg-yellow-100 text-yellow-700"
-                      : "bg-gray-200 text-gray-700"
-                  }`}
+                    "bg-indigo-100 text-indigo-700"
+                      }`}
                 >
-                  {event.status}
+                  {"Published"}
                 </span>
 
                 <p className="text-xs sm:text-sm text-gray-500 text-right w-20 flex-shrink-0">
-                  {event.date}
+                  {"07/08/2025"}
                 </p>
 
                 <button
@@ -107,6 +119,13 @@ function CreateEventForm() {
   const [selectedImages, setSelectedImages] = useState([]);
   const [selectedPdf, setSelectedPdf] = useState(null);
   const [selectedVideo, setSelectedVideo] = useState(null);
+  const [title, setTitle] = useState("");
+  const [description, setDesc] = useState("");
+  const [images, setImages] = useState([]);
+  const [videoURL, setVideoURL] = useState("");
+  const [pdf, setPdf] = useState(null);
+  const [location, setLocation] = useState("");
+  const [date, setDate] = useState('');
 
   const handleImageUpload = (e) => {
     if (e.target.files) setSelectedImages(Array.from(e.target.files));
@@ -122,13 +141,26 @@ function CreateEventForm() {
       setSelectedVideo(e.target.files[0]);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert(
-      `Form submitted. Images: ${selectedImages.length}, Video: ${
-        selectedVideo ? selectedVideo.name : "None"
-      }, PDF: ${selectedPdf ? selectedPdf.name : "None"}`
-    );
+    const data = {
+      title,
+      description,
+      //images,
+      //videoURL,
+      //pdf,
+      location
+    };
+    console.log("Event submitted:", data);
+    alert("Announcement Sent!");
+    const { error } = await supabase
+    .from('events')
+    .insert(data)
+    // alert(
+    //   `Form submitted. Images: ${selectedImages.length}, Video: ${
+    //     selectedVideo ? selectedVideo.name : "None"
+    //   }, PDF: ${selectedPdf ? selectedPdf.name : "None"}`
+    // );
   };
 
   return (
@@ -144,6 +176,8 @@ function CreateEventForm() {
           </label>
           <input
             type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
             className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500 transition"
             placeholder="Enter event title"
             required
@@ -156,11 +190,27 @@ function CreateEventForm() {
             Description
           </label>
           <textarea
+            value={description}
+            onChange={(e) => setDesc(e.target.value)}
             className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500 transition"
             rows={4}
             placeholder="Enter event description"
             required
           ></textarea>
+        </div>
+
+        {/* Location */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Event Location
+          </label>
+          <input
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500 transition"
+            placeholder="Enter event location"
+            required
+          ></input>
         </div>
 
         {/* Image Upload */}
