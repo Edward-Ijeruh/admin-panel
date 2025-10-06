@@ -1,30 +1,24 @@
-import { useEffect, useState } from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
-import { supabase } from './../supabaseClient';
+import { useEffect, useState } from "react";
+import { Navigate, Outlet } from "react-router-dom";
 
 function ProtectedRoute() {
-  const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [hasToken, setHasToken] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setLoading(false);
-    });
-
-    // Optional: listen for changes
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
+    const token = localStorage.getItem("authToken");
+    setHasToken(!!token);
+    setLoading(false);
   }, []);
 
   if (loading) return <p>Loading...</p>;
 
-  return session ? <Outlet /> : <Navigate to="/login" />;
+  // To override auth for development (Remember to change it back later)
+  if (import.meta.env.MODE === "development") {
+    return <Outlet />;
+  }
+
+  return hasToken ? <Outlet /> : <Navigate to="/login" replace />;
 }
 
 export default ProtectedRoute;

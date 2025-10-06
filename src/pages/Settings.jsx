@@ -9,10 +9,8 @@ import {
   Globe,
 } from "phosphor-react";
 import { useEffect, useState } from "react";
-import { supabase } from './../supabaseClient';
+import { supabase } from "./../supabaseClient";
 import { useNavigate } from "react-router-dom";
-
-
 
 export default function Settings() {
   const [language, setLanguage] = useState("en");
@@ -33,36 +31,36 @@ export default function Settings() {
     if (savedPush !== null) setPushNotifications(savedPush === "true");
 
     const fetchUser = async () => {
-      const { data: { user }, error } = await supabase.auth.getUser();
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
       if (error) {
-        console.error('Failed to get user', error.message);
+        console.error("Failed to get user", error.message);
       } else {
         setUser(user);
         // Step 2: Get additional user info from your custom `users` table
-      const { data, error } = await supabase
-        .from('users')
-        .select('full_name')
-        .eq('id', user.id)
-        .single();
-        
-        setUserName(data.full_name);
+        const { data, error } = await supabase
+          .from("users")
+          .select("full_name")
+          .eq("id", user.id)
+          .single();
 
+        setUserName(data.full_name);
       }
     };
 
-
     fetchUser();
-
   }, []);
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
-      console.error('Logout error:', error.message);
+      console.error("Logout error:", error.message);
     } else {
-      console.log('Logged out');
-      navigate('/login');
-     }
+      console.log("Logged out");
+      navigate("/login");
+    }
   };
 
   // Save settings to localStorage
@@ -88,11 +86,7 @@ export default function Settings() {
           </div>
           <div className="text-sm text-gray-600 space-y-1">
             <p>Name: {userName}</p>
-           {user ? (
-              <p>{user.email}</p>
-            ) : (
-              <p></p>
-            )}
+            {user ? <p>{user.email}</p> : <p></p>}
             <button className="text-indigo-600 hover:underline cursor-pointer mt-2">
               Edit Profile
             </button>
@@ -138,7 +132,10 @@ export default function Settings() {
 
         {/* Logout Section */}
         <div className="p-6">
-          <button className="flex items-center gap-2 text-red-600 hover:text-red-800 text-sm cursor-pointer" onClick={handleLogout}>
+          <button
+            className="flex items-center gap-2 text-red-600 hover:text-red-800 text-sm cursor-pointer"
+            onClick={handleLogout}
+          >
             <SignOut size={18} />
             Logout
           </button>

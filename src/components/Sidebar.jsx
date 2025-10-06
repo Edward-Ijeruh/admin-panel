@@ -1,27 +1,43 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { Gauge, Calendar, Users, Gear, SignOut, X } from "phosphor-react";
-import { supabase } from './../supabaseClient';
-
+import {
+  House,
+  Users,
+  ShoppingCart,
+  ClipboardText,
+  Gear,
+  SignOut,
+  X,
+} from "phosphor-react";
+import { supabase } from "./../supabaseClient";
+import logo from "/logo.png";
 
 const navItems = [
-  { name: "Dashboard", path: "/dashboard", icon: <Gauge size={20} /> },
-  { name: "Events", path: "/dashboard/events", icon: <Calendar size={20} /> },
+  { name: "Home", path: "/dashboard", icon: <House size={20} /> },
   { name: "Users", path: "/dashboard/users", icon: <Users size={20} /> },
+  {
+    name: "Orders",
+    path: "/dashboard/orders",
+    icon: <ShoppingCart size={20} />,
+  },
+  {
+    name: "Vendor Application",
+    path: "/dashboard/vendors",
+    icon: <ClipboardText size={20} />,
+  },
   { name: "Settings", path: "/dashboard/settings", icon: <Gear size={20} /> },
 ];
 
 export default function Sidebar({ isOpen, setIsOpen }) {
   const navigate = useNavigate();
 
-
-const handleLogout = async () => {
+  const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
-      console.error('Logout error:', error.message);
+      console.error("Logout error:", error.message);
     } else {
-      console.log('Logged out');
-      navigate('/login');
-     }
+      console.log("Logged out");
+      navigate("/login");
+    }
   };
 
   return (
@@ -38,8 +54,15 @@ const handleLogout = async () => {
           isOpen ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0`}
       >
-        <div className="p-6 text-xl font-bold flex items-center justify-between">
-          Event Cast
+        {/* Branding */}
+        <div className="p-6 flex items-center justify-between">
+          <div className="bg-red-600 rounded-full p-2 flex items-center justify-center">
+            <img
+              src={logo}
+              alt="Company Logo"
+              className="w-40 h-10 object-contain"
+            />
+          </div>
           <button
             className="md:hidden text-gray-500"
             onClick={() => setIsOpen(false)}
@@ -48,17 +71,19 @@ const handleLogout = async () => {
           </button>
         </div>
 
+        {/* Nav Items */}
         <nav className="flex flex-col gap-1 px-4">
           {navItems.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
+              end={item.path === "/dashboard"}
               onClick={() => setIsOpen(false)}
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-2 rounded-md transition font-medium ${
                   isActive
-                    ? "bg-indigo-100 text-indigo-700"
-                    : "text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+                    ? "bg-red-100 text-red-700"
+                    : "text-gray-700 hover:bg-red-50 hover:text-red-600"
                 }`
               }
             >
@@ -68,9 +93,10 @@ const handleLogout = async () => {
           ))}
         </nav>
 
-        <button 
-        className="flex items-center gap-2 px-8 py-3 mt-auto w-full text-red-600 hover:bg-red-50 transition cursor-pointer"
-        onClick={handleLogout}
+        {/* Logout Button */}
+        <button
+          className="flex items-center gap-2 px-8 py-3 mt-auto w-full text-red-600 hover:bg-red-50 transition cursor-pointer"
+          onClick={handleLogout}
         >
           <SignOut size={20} />
           Logout

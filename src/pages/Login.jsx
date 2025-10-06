@@ -1,46 +1,50 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from './../supabaseClient';
-import { useEffect } from 'react';
-
-
+import { adminLogin } from "../api/admin";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
-
-  
 
   const signIn = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-     if (error) {
-      console.log(error);
-      alert(error.message);
-    } else {
-      // Navigate to dashboard
-      navigate('/dashboard');
+    try {
+      const res = await adminLogin({ phoneNumber, password });
+
+      if (res?.token) {
+        localStorage.setItem("authToken", res.token);
+        navigate("/dashboard");
+      } else {
+        alert("Login failed: No token received");
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      alert(err.response?.data?.message || "Invalid credentials");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex items-center justify-center px-4">
+    <div className="flex items-center justify-center py-10 px-4">
       <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
         <h2 className="text-2xl font-bold mb-6 text-center">Admin Login</h2>
 
         <form onSubmit={signIn} className="space-y-5">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email address
+              Phone Number
             </label>
             <input
-              type="email"
+              type="text"
               required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              placeholder="+1234567890"
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
@@ -54,31 +58,17 @@ export default function Login() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              placeholder="password"
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
-          <div className="flex items-center justify-between">
-            <label className="flex items-center text-sm text-gray-600">
-              <input
-                type="checkbox"
-                className="mr-2 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
-              />
-              Remember me
-            </label>
-            <a
-              href="#"
-              className="text-sm text-indigo-600 hover:underline cursor-pointer"
-            >
-              Forgot password?
-            </a>
-          </div>
-
           <button
             type="submit"
-            className="w-full bg-indigo-600 text-white font-semibold py-2 rounded-md hover:bg-indigo-700 transition cursor-pointer"
+            disabled={loading}
+            className="w-full bg-indigo-600 text-white font-semibold py-2 rounded-md hover:bg-indigo-700 transition cursor-pointer disabled:opacity-50"
           >
-            Log In
+            {loading ? "Logging in..." : "Log In"}
           </button>
         </form>
       </div>
